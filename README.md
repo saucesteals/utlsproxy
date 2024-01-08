@@ -1,7 +1,7 @@
 <div align="center">
 <img src="./assets/logo.png" alt="logo" height="250px" />
 <h1 align="center">uTLS Proxy</h1>
-<h3>MITM Proxy that the server will not know about</h3>
+<h3>MITM Proxy with TLS mimicry</h3>
 </div>
 
 ---
