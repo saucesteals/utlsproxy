@@ -44,6 +44,10 @@ All (to my knowledge) MITM proxies replay requests to servers with stdlib transp
 
 Curious how? Most of the work is at [saucesteals/goproxy](https://github.com/saucesteals/goproxy) (credits to [elazarl/goproxy](https://github.com/elazarl/goproxy) for the base proxy implementation)
 
+## mTLS
+
+Like every other MITM, this will not work with mTLS. Find the client's certificate and private key, then add it to the tls.Config (Rarely will you need this, so this is only possible by cloning and adding it yourself)
+
 ## Contributing
 
 Contributions are welcome!
