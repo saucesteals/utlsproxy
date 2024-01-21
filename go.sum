@@ -22,8 +22,8 @@ github.com/quic-go/quic-go v0.37.4 h1:ke8B73yMCWGq9MfrCCAw0Uzdm7GaViC3i39dsIdDlH
 github.com/quic-go/quic-go v0.37.4/go.mod h1:YsbH1r4mSHPJcLF4k4zruUkLBqctEMBDR6VPvcYjIsU=
 github.com/refraction-networking/utls v1.6.0 h1:X5vQMqVx7dY7ehxxqkFER/W6DSjy8TMqSItXm8hRDYQ=
 github.com/refraction-networking/utls v1.6.0/go.mod h1:kHJ6R9DFFA0WsRgBM35iiDku4O7AqPR6y79iuzW7b10=
-github.com/saucesteals/goproxy v0.0.0-20240121025433-30bb203645f1 h1:3j1ObrAuWxcbcuI5auh0LWiEwEgTd5Tqwk4vbXLSh10=
-github.com/saucesteals/goproxy v0.0.0-20240121025433-30bb203645f1/go.mod h1:xREXXULVoZiE9gU9UcE4vXN5iUj974kUQDYn8z3yUoA=
+github.com/saucesteals/goproxy v0.0.0-20240121050258-0fabfd2d7099 h1:/96ZuYQyLOc3JKzTzUcfto1437EdCJ/AiE4c8sXK52o=
+github.com/saucesteals/goproxy v0.0.0-20240121050258-0fabfd2d7099/go.mod h1:xREXXULVoZiE9gU9UcE4vXN5iUj974kUQDYn8z3yUoA=
 golang.org/x/crypto v0.14.0 h1:wBqGXzWJW6m1XrIKlAH0Hs1JJ7+9KBwnIO8v66Q9cHc=
 golang.org/x/crypto v0.14.0/go.mod h1:MVFd36DqK4CsrnJYDkBA3VC4m2GkXAM0PvzMCn4JQf4=
 golang.org/x/net v0.17.0 h1:pVaXccu2ozPjCXewfr1S7xza/zcXTity9cCdXQYSjIM=
