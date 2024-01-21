@@ -28,10 +28,8 @@ $ go install github.com/saucesteals/utlsproxy
 
 ```sh
 $ utlsproxy
-  -interface string
-        Network interface to bind to (default "lo0")
-  -port string
-        Proxy port (default "8080")
+  -addr string
+        Address to bind to (default ":8080")
   -keylog string
         TLS key log file
 ```

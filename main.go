@@ -7,20 +7,18 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"net"
 	"net/http"
 	"os"
 	"strings"
 
-	"github.com/elazarl/goproxy"
+	"github.com/elazarl/goproxy" // github.com/saucesteals/goproxy
 	utls "github.com/refraction-networking/utls"
 	"github.com/saucesteals/utlsproxy/cert"
 )
 
 var (
 	flagKeyLogFile = flag.String("keylog", "", "TLS key log file")
-	flagPort       = flag.String("port", "8080", "Proxy port")
-	flagInterface  = flag.String("interface", "lo0", "Network interface to bind to")
+	flagAddr       = flag.String("addr", ":8080", "Address to bind to")
 )
 
 func main() {
@@ -33,15 +31,10 @@ func main() {
 	goproxy.MitmConnect = &goproxy.ConnectAction{Action: goproxy.ConnectMitm, TLSConfig: goproxy.TLSConfigFromCA(ca)}
 
 	proxy := goproxy.NewProxyHttpServer(tlsConfig())
-	proxy.Verbose = true
 	proxy.OnRequest().HandleConnect(goproxy.AlwaysMitm)
 	proxy.OnRequest().DoFunc(serveCertificate(ca))
 
-	addr, err := bindToAddr()
-	if err != nil {
-		log.Panic(err)
-	}
-
+	addr := *flagAddr
 	log.Printf("Listening on %s", addr)
 	if err := http.ListenAndServe(addr, proxy); err != nil {
 		log.Panic(err)
@@ -55,7 +48,6 @@ func tlsConfig() *utls.Config {
 		if err != nil {
 			log.Panic(err)
 		}
-		defer w.Close()
 
 		keyLogWriter = w
 	}
@@ -83,36 +75,4 @@ func serveCertificate(ca *tls.Certificate) func(r *http.Request, ctx *goproxy.Pr
 			Body: io.NopCloser(bytes.NewReader(ca.Leaf.Raw)),
 		}
 	}
-}
-
-func bindToAddr() (string, error) {
-	addr := ""
-	interfaces, err := net.Interfaces()
-	if err != nil {
-		return "", err
-	}
-
-	for _, iface := range interfaces {
-		if iface.Name != *flagInterface {
-			continue
-		}
-
-		addrs, err := iface.Addrs()
-		if err != nil {
-			return "", err
-		}
-
-		for _, ifaceAddr := range addrs {
-			if ip, ok := ifaceAddr.(*net.IPNet); ok {
-				addr = ip.IP.String()
-				break
-			}
-		}
-	}
-
-	if addr == "" {
-		return "", fmt.Errorf("could not find interface %s", *flagInterface)
-	}
-
-	return fmt.Sprintf("%s:%s", addr, *flagPort), nil
 }
