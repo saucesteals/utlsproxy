@@ -24,6 +24,7 @@ var (
 
 func main() {
 	flag.Parse()
+	flag.Usage()
 
 	ca, err := cert.GetCertificate()
 	if err != nil {

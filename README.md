@@ -32,6 +32,8 @@ $ utlsproxy
         Address to bind to (default ":8080")
   -keylog string
         TLS key log file
+  -http1
+        Force HTTP/1.1 between client and proxy
 ```
 
 ---
