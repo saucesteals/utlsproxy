@@ -2,10 +2,10 @@ module github.com/saucesteals/utlsproxy
 
 go 1.21.0
 
-replace github.com/elazarl/goproxy => github.com/saucesteals/goproxy v0.0.0-20240121050258-0fabfd2d7099
+replace github.com/elazarl/goproxy => github.com/saucesteals/goproxy v0.0.0-20240124022437-840670a451ca
 
 require (
-	github.com/elazarl/goproxy v0.0.0-20231117061959-7cc037d33fb5
+	github.com/elazarl/goproxy v0.0.0-20240124022437-840670a451ca
 	github.com/refraction-networking/utls v1.6.0
 )
 
