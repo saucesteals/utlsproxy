@@ -19,6 +19,7 @@ import (
 var (
 	flagKeyLogFile = flag.String("keylog", "", "TLS key log file")
 	flagAddr       = flag.String("addr", ":8080", "Address to bind to")
+	flagHttp1Only  = flag.Bool("http1", false, "Force HTTP/1.1 between client and proxy")
 )
 
 func main() {
@@ -28,10 +29,29 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
-	goproxy.MitmConnect = &goproxy.ConnectAction{Action: goproxy.ConnectMitm, TLSConfig: goproxy.TLSConfigFromCA(ca)}
+
+	proxyCAConfig := goproxy.TLSConfigFromCA(ca)
+	proxyTlsConfig := func(host string, ctx *goproxy.ProxyCtx) (*tls.Config, error) {
+		config, err := proxyCAConfig(host, ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		config.NextProtos = []string{"h2", "http/1.1"}
+		if *flagHttp1Only {
+			config.NextProtos = []string{"http/1.1"}
+		}
+
+		return config, nil
+	}
 
 	proxy := goproxy.NewProxyHttpServer(tlsConfig())
-	proxy.OnRequest().HandleConnect(goproxy.AlwaysMitm)
+	proxy.OnRequest().HandleConnect(goproxy.FuncHttpsHandler(func(host string, ctx *goproxy.ProxyCtx) (*goproxy.ConnectAction, string) {
+		return &goproxy.ConnectAction{
+			Action:    goproxy.ConnectMitm,
+			TLSConfig: proxyTlsConfig,
+		}, host
+	}))
 	proxy.OnRequest().DoFunc(serveCertificate(ca))
 
 	addr := *flagAddr
