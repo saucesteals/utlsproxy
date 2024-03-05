@@ -40,7 +40,7 @@ $ utlsproxy
 
 ## Why?
 
-All (to my knowledge) MITM proxies replay requests to servers with stdlib transports, essentially letting the server fingerprint it. The goal of utlsproxy is to allow you to inspect TLS application data while mimicing the original client. The proxy will sniff the client's clienthello message and use it as its own when handshaking with the server.
+All (to my knowledge) MITM proxies replay requests to servers with stdlib transports, essentially letting the server fingerprint it. The goal of utlsproxy is to allow you to inspect TLS application data while mimicking the original client. The proxy will sniff the client's clienthello message and use it as its own when handshaking with the server.
 
 Curious how? Most of the work is at [saucesteals/goproxy](https://github.com/saucesteals/goproxy) (credits to [elazarl/goproxy](https://github.com/elazarl/goproxy) for the base proxy implementation)
 
