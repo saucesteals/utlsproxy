@@ -1,2 +1,4 @@
 .DS_Store
 cert/*.pem
+/utlsproxy
+/keylog
