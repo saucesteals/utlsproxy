@@ -44,6 +44,37 @@ All (to my knowledge) MITM proxies replay requests to servers with stdlib transp
 
 Curious how? Most of the work is at [saucesteals/goproxy](https://github.com/saucesteals/goproxy) (credits to [elazarl/goproxy](https://github.com/elazarl/goproxy) for the base proxy implementation)
 
+## Injecting a Client Hello from a previous session
+
+Instead of fingerprinting the proxy client's ClientHello, you might want to save a ClientHello and re-inject it. E.g. you can save a Safari ClientHello and use it for your cURL requests.
+
+### Saving a Client Hello
+
+Simply define the `GOPROXY_CLIENT_HELLO_SAVE_DIR` variable:
+
+```bash
+GOPROXY_CLIENT_HELLO_SAVE_DIR="./client_hello" ./utlsproxy
+```
+
+This will save the client hello files in the `./client_hello` directory.
+
+### Re-using a saved Client Hello
+
+This time, define the `GOPROXY_OVERWRITE_CLIENT_HELLO` variable:
+
+```bash
+GOPROXY_OVERWRITE_CLIENT_HELLO="./client_hello/ch_safari_17.4.1_macOS_14.4.1.bin" ./utlsproxy
+```
+
+All requests will then have Safari's fingerprint.
+
+To confirm
+
+```bash
+curl --silent --insecure --proxy localhost:8080 https://tls.peet.ws/api/tls | jq .tls.peetprint_hash
+# "b2bafdc69377086c3416be278fd21121"
+```
+
 ## mTLS
 
 Like every other MITM, this will not work with mTLS. Find the client's certificate and private key, then add it to the tls.Config (Rarely will you need this, so this is only possible by cloning and adding it yourself)
