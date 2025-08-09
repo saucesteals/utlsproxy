@@ -20,10 +20,30 @@ var (
 	flagKeyLogFile = flag.String("keylog", "", "TLS key log file")
 	flagAddr       = flag.String("addr", ":8080", "Address to bind to")
 	flagHttp1Only  = flag.Bool("http1", false, "Force HTTP/1.1 between client and proxy")
+	flagClientCert = flag.String("clientcert", "", "mTLS client certificate file (pem)")
+	flagClientKey  = flag.String("clientkey", "", "mTLS client key file (pem)")
+	flagMtlsDomain = flag.String("mtlsdomain", "", "Enable mTLS for this domain")
+
+	mtlsCertificate *utls.Certificate
 )
 
 func main() {
 	flag.Parse()
+
+	if *flagClientCert != "" && *flagClientKey != "" {
+		if *flagMtlsDomain == "" {
+			log.Panic("mtlsdomain is required when clientcert and clientkey are provided")
+		}
+
+		cert, err := utls.LoadX509KeyPair(*flagClientCert, *flagClientKey)
+		if err != nil {
+			log.Panic(err)
+		}
+
+		mtlsCertificate = &cert
+	} else if *flagMtlsDomain != "" {
+		log.Panic("clientcert and clientkey are required when mtlsdomain is provided")
+	}
 
 	ca, err := cert.GetCertificate()
 	if err != nil {
@@ -73,7 +93,16 @@ func tlsConfig() *utls.Config {
 		keyLogWriter = w
 	}
 
-	return &utls.Config{KeyLogWriter: keyLogWriter}
+	return &utls.Config{
+		KeyLogWriter: keyLogWriter,
+		GetCertificate: func(info *utls.ClientHelloInfo) (*utls.Certificate, error) {
+			if info.ServerName == *flagMtlsDomain {
+				return mtlsCertificate, nil
+			}
+
+			return nil, nil
+		},
+	}
 }
 
 func serveCertificate(ca *tls.Certificate) func(r *http.Request, ctx *goproxy.ProxyCtx) (*http.Request, *http.Response) {

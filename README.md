@@ -19,7 +19,10 @@
 ## Installation
 
 ```sh
-$ go install github.com/saucesteals/utlsproxy
+$ git clone https://github.com/saucesteals/utlsproxy
+$ cd utlsproxy
+$ go build
+$ ./utlsproxy
 ```
 
 ---
@@ -27,13 +30,19 @@ $ go install github.com/saucesteals/utlsproxy
 ## Usage
 
 ```sh
-$ utlsproxy
+$ ./utlsproxy
   -addr string
         Address to bind to (default ":8080")
-  -keylog string
-        TLS key log file
   -http1
         Force HTTP/1.1 between client and proxy
+  -keylog string
+        TLS key log file
+  -clientcert string
+        mTLS client certificate file (pem)
+  -clientkey string
+        mTLS client key file (pem)
+  -mtlsdomain string
+        Enable mTLS for this domain
 ```
 
 ---
@@ -43,10 +52,6 @@ $ utlsproxy
 All (to my knowledge) MITM proxies replay requests to servers with stdlib transports, essentially letting the server fingerprint it. The goal of utlsproxy is to allow you to inspect TLS application data while mimicking the original client. The proxy will sniff the client's clienthello message and use it as its own when handshaking with the server.
 
 Curious how? Most of the work is at [saucesteals/goproxy](https://github.com/saucesteals/goproxy) (credits to [elazarl/goproxy](https://github.com/elazarl/goproxy) for the base proxy implementation)
-
-## mTLS
-
-Like every other MITM, this will not work with mTLS. Find the client's certificate and private key, then add it to the tls.Config (Rarely will you need this, so this is only possible by cloning and adding it yourself)
 
 ## Contributing
 
