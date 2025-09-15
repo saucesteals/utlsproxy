@@ -66,7 +66,7 @@ func main() {
 	}
 
 	proxy := goproxy.NewProxyHttpServer(tlsConfig())
-	proxy.CertStore = NewOptimizedCertStore()
+	proxy.CertStore = NewCertStorage()
 	proxy.OnRequest().HandleConnect(goproxy.FuncHttpsHandler(func(host string, ctx *goproxy.ProxyCtx) (*goproxy.ConnectAction, string) {
 		return &goproxy.ConnectAction{
 			Action:    goproxy.ConnectMitm,

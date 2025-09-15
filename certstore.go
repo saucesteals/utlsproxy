@@ -5,44 +5,30 @@ import (
 	"sync"
 )
 
-type OptimizedCertStore struct {
-	certs map[string]*tls.Certificate
-	locks map[string]*sync.Mutex
-	sync.Mutex
+type CertStorage struct {
+	certs sync.Map
 }
 
-func NewOptimizedCertStore() *OptimizedCertStore {
-	return &OptimizedCertStore{
-		certs: map[string]*tls.Certificate{},
-		locks: map[string]*sync.Mutex{},
-	}
-}
-
-func (s *OptimizedCertStore) Fetch(host string, genCert func() (*tls.Certificate, error)) (*tls.Certificate, error) {
-	hostLock := s.hostLock(host)
-	hostLock.Lock()
-	defer hostLock.Unlock()
-
-	cert, ok := s.certs[host]
-	var err error
-	if !ok {
-		cert, err = genCert()
+func (tcs *CertStorage) Fetch(hostname string, gen func() (*tls.Certificate, error)) (*tls.Certificate, error) {
+	var cert tls.Certificate
+	icert, ok := tcs.certs.Load(hostname)
+	if ok {
+		cert = icert.(tls.Certificate)
+	} else {
+		certp, err := gen()
 		if err != nil {
 			return nil, err
 		}
-		s.certs[host] = cert
+		// store as concrete implementation
+		cert = *certp
+		tcs.certs.Store(hostname, cert)
 	}
-	return cert, nil
+	return &cert, nil
 }
 
-func (s *OptimizedCertStore) hostLock(host string) *sync.Mutex {
-	s.Lock()
-	defer s.Unlock()
+func NewCertStorage() *CertStorage {
+	tcs := &CertStorage{}
+	tcs.certs = sync.Map{}
 
-	lock, ok := s.locks[host]
-	if !ok {
-		lock = &sync.Mutex{}
-		s.locks[host] = lock
-	}
-	return lock
+	return tcs
 }
